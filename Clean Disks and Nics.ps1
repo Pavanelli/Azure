@@ -29,5 +29,3 @@ foreach ($NIC in $AttachedNICs) {
         }
        }
 }
-
-teste
