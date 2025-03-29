@@ -1,23 +1,29 @@
 Connect-AzAccount
 # Set deleteUnattachedDisks=1 if you want to delete unattached Managed Disks
 # Set deleteUnattachedDisks=0 if you want to see the Id of the unattached Managed Disks
-$deleteUnattachedDisks=1
-$managedDisks = Get-AzDisk
+$deleteUnattachedDisks = 1
+$resourceGroupName = "YOUR_RESOURCE_GROUP"  # Defina o nome do seu Resource Group aqui
+
+# Obter os discos gerenciados do Resource Group específico
+$managedDisks = Get-AzDisk -ResourceGroupName $resourceGroupName
+
 foreach ($md in $managedDisks) {
-# ManagedBy property stores the Id of the VM to which Managed Disk is attached to
-    # If ManagedBy property is $null then it means that the Managed Disk is not attached to a VM
-    if($md.ManagedBy -eq $null){
-        if($deleteUnattachedDisks -eq 1){
-            Write-Host "Deleting unattached Managed Disk with Id: $($md.Id)"
-       $md | Remove-AzDisk -Force
-       Write-Host "Deleted unattached Managed Disk with Id: $($md.Id) "
-        }else{
-       $md.Id
+    # ManagedBy property armazena o Id da VM à qual o Managed Disk está anexado
+    # Se a propriedade ManagedBy for $null, significa que o Managed Disk não está anexado a uma VM
+    if ($md.ManagedBy -eq $null) {
+        if ($deleteUnattachedDisks -eq 1) {
+            Write-Host "Deletando Managed Disk não anexado com Id: $($md.Id)"
+            $md | Remove-AzDisk -Force
+            Write-Host "Deletado Managed Disk não anexado com Id: $($md.Id)"
+        } else {
+            $md.Id
         }
-       }
+    }
+}
+
 }
 $deleteUnattachedNICs=1
-$AttachedNICs = Get-AzNetworkInterface -ResourceGroupName "TEMPOASSIST-USEAST2"
+$AttachedNICs = Get-AzNetworkInterface -ResourceGroupName "YOUR_RESOURCE_GROUP"
 foreach ($NIC in $AttachedNICs) {
        if($NIC.VirtualMachine -eq $null){
         if($deleteUnattachedNICs -eq 1){
